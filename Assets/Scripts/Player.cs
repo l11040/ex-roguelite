@@ -6,6 +6,25 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public float hp = 5;
+    public float MAX_HP = 5;
+    public float attack;
+
+    public bool noDamage;
+
+    public static Player Instance { get; private set; }
+
+    public void Awake()
+    {
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
+
+
     public float speed;
     private Rigidbody rb;
     public AudioSource itemSound;
@@ -49,6 +68,15 @@ public class Player : MonoBehaviour
             score = score + 20;
         }
 
+        if (other.tag == "EnemyMonster")
+        {
+            if (!noDamage)
+            {
+                hp = hp - other.GetComponent<EnemyMonster>().damage;
+                StartCoroutine("OnDamage");
+            }
+        }
+
         leftItem--;
 
 
@@ -67,12 +95,20 @@ public class Player : MonoBehaviour
         if (other.gameObject.tag == "Floor")
         {
             isJump = true;
+            anime.SetBool("jumping", false);
         }
 
         if (other.gameObject.tag == "ReGame")
         {
             OnRegame();
         }
+    }
+
+    IEnumerator OnDamage()
+    {
+        noDamage = true;
+        yield return new WaitForSeconds(1f);
+        noDamage = false;
     }
 
     public void OnRegame()
@@ -121,6 +157,8 @@ public class Player : MonoBehaviour
         if (isJump)
         {
             rb.AddForce(Vector3.up * 3f, ForceMode.Impulse);
+            anime.SetTrigger("doJump");
+            anime.SetBool("jumping", true);
             isJump = false;
         }
     }

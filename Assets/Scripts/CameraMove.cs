@@ -10,13 +10,6 @@ public class CameraMove : MonoBehaviour
     public float offsetZ;
     public float speed;
 
-    void Start()
-    {
-        offsetX = transform.position.x;
-        offsetY = transform.position.y;
-        offsetZ = transform.position.z;
-    }
-
     void Update()
     {
         Vector3 fixedPos
